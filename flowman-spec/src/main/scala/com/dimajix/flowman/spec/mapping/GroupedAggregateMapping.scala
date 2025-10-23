@@ -152,7 +152,7 @@ final case class GroupedAggregateMapping(
         val results = groups.zip(groupIds).map { case ((name,group),mask) =>
             val dimensions = group.dimensions
             name -> extractGroup(cache, group, dimensions, mask)
-        }
+        }.toMap
 
         results ++ Map("cache" -> cache)
     }
@@ -198,7 +198,7 @@ final case class GroupedAggregateMapping(
             val dimensions = group.dimensions.map(d => groupPrefix + "." + d)
             val mask = groupingMask & ~(1 << (numGroups - 1 - index))
             name -> extractGroup(cache, group, dimensions,  mask)
-        }
+        }.toMap
 
         results ++ Map("cache" -> cache)
     }

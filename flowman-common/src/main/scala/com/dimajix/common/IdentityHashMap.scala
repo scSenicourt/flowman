@@ -16,20 +16,65 @@
 
 package com.dimajix.common
 
-import scala.collection.generic._
-import scala.collection.convert.Wrappers._
+import scala.collection.mutable
+import scala.collection.mutable.Map
+import scala.jdk.CollectionConverters._
 
 
-class IdentityHashMap[A, B] extends JMapWrapper[A, B](new java.util.IdentityHashMap)
-    with JMapWrapperLike[A, B, IdentityHashMap[A, B]] {
-    override def empty = new IdentityHashMap[A, B]
-    override def clone(): IdentityHashMap[A,B] = new IdentityHashMap[A,B]() ++= this
+class IdentityHashMap[A, B] private(underlying: java.util.IdentityHashMap[A, B]) extends Map[A, B] {
+    def this() = this(new java.util.IdentityHashMap[A, B]())
+    
+    def updated(key: A, value: B): IdentityHashMap[A, B] = {
+        val result = new IdentityHashMap[A, B](new java.util.IdentityHashMap[A, B](underlying))
+        result.put(key, value)
+        result
+    }
+    
+    def removed(key: A): IdentityHashMap[A, B] = {
+        val result = new IdentityHashMap[A, B](new java.util.IdentityHashMap[A, B](underlying))
+        result.remove(key)
+        result
+    }
+    
+    override def get(key: A): Option[B] = {
+        val value = underlying.get(key)
+        if (value == null) None else Some(value)
+    }
+    
+    override def iterator: Iterator[(A, B)] = underlying.asScala.iterator
+    
+    override def addOne(kv: (A, B)): this.type = {
+        underlying.put(kv._1, kv._2)
+        this
+    }
+    
+    override def subtractOne(key: A): this.type = {
+        underlying.remove(key)
+        this
+    }
+    
+    override def clear(): Unit = underlying.clear()
+    
+    override def size: Int = underlying.size()
+    
+    override def put(key: A, value: B): Option[B] = {
+        val result = underlying.get(key)
+        underlying.put(key, value)
+        if (result == null) None else Some(result)
+    }
+    
+    override def remove(key: A): Option[B] = {
+        val result = underlying.get(key)
+        underlying.remove(key)
+        if (result == null) None else Some(result)
+    }
+    
+    override def clone(): IdentityHashMap[A, B] = new IdentityHashMap[A, B](new java.util.IdentityHashMap[A, B](underlying))
 }
 
 
-object IdentityHashMap extends MutableMapFactory[IdentityHashMap] {
-    implicit def canBuildFrom[A, B]: CanBuildFrom[Coll, (A, B), IdentityHashMap[A, B]] =
-        new MapCanBuildFrom[A, B]
-
-    def empty[A, B]: IdentityHashMap[A, B] = new IdentityHashMap[A, B]
+object IdentityHashMap {
+    def empty[A, B]: IdentityHashMap[A, B] = new IdentityHashMap[A, B]()
+    
+    def apply[A, B](): IdentityHashMap[A, B] = empty[A, B]
 }

@@ -20,14 +20,13 @@ import java.util.Locale
 
 import scala.collection.Iterator
 import scala.collection.Map
-import scala.collection.MapLike
 import scala.collection.Seq
 
 
 object MapIgnoreCase {
     def apply[T]() : MapIgnoreCase[T] = new MapIgnoreCase[T](Map.empty)
     def apply[T](map:Map[String,T]) : MapIgnoreCase[T] = {
-        new MapIgnoreCase[T](map.map(kv => kv._1.toLowerCase(Locale.ROOT) -> ((kv._1, kv._2))))
+        new MapIgnoreCase[T](map.map(kv => kv._1.toLowerCase(Locale.ROOT) -> ((kv._1, kv._2))).toMap)
     }
 
     def apply[T](seq:Seq[(String,T)]) : MapIgnoreCase[T] = {
@@ -42,7 +41,7 @@ object MapIgnoreCase {
 }
 
 
-class MapIgnoreCase[B] private(impl:Map[String,(String,B)] = Map()) extends Map[String,B] with MapLike[String,B,MapIgnoreCase[B]] {
+class MapIgnoreCase[B] private(impl:Map[String,(String,B)] = Map()) extends Map[String,B] {
     override def empty: MapIgnoreCase[B] = MapIgnoreCase[B]()
 
     override def get(key: String): Option[B] = {
@@ -64,7 +63,7 @@ class MapIgnoreCase[B] private(impl:Map[String,(String,B)] = Map()) extends Map[
       */
     override def iterator: Iterator[(String, B)] = impl.valuesIterator
 
-    override def keys : Iterable[String] = impl.keys
+    override def keySet: scala.collection.Set[String] = impl.keySet
 
     override def keysIterator : Iterator[String] = impl.keysIterator
 
@@ -76,7 +75,7 @@ class MapIgnoreCase[B] private(impl:Map[String,(String,B)] = Map()) extends Map[
       *  @usecase  def + (kv: (String, B)): Map[A, B]
       *    @inheritdoc
       */
-    override def + [B1 >: B] (kv: (String, B1)): MapIgnoreCase[B1] = new MapIgnoreCase[B1](impl + (kv._1.toLowerCase(Locale.ROOT) -> ((kv._1, kv._2))))
+    def updated[B1 >: B] (key: String, value: B1): MapIgnoreCase[B1] = new MapIgnoreCase[B1](impl + (key.toLowerCase(Locale.ROOT) -> ((key, value))))
 
     /** Removes a key from this map, returning a new map.
       *  @param    key the key to be removed
@@ -85,7 +84,17 @@ class MapIgnoreCase[B] private(impl:Map[String,(String,B)] = Map()) extends Map[
       *  @usecase  def - (key: A): Map[A, B]
       *    @inheritdoc
       */
-    override def - (key: String): MapIgnoreCase[B] = new MapIgnoreCase[B](impl - key.toLowerCase(Locale.ROOT))
+    def removed(key: String): MapIgnoreCase[B] = new MapIgnoreCase[B](impl - key.toLowerCase(Locale.ROOT))
 
-    override def mapValues[C](f: B => C): MapIgnoreCase[C] = new MapIgnoreCase(impl.mapValues(kv => (kv._1, f(kv._2))))
+    override def -(key: String): Map[String, B] = removed(key)
+
+    override def -(key1: String, key2: String, keys: String*): Map[String, B] = {
+        var result = removed(key1).removed(key2)
+        keys.foreach(key => result = result.removed(key))
+        result
+    }
+
+    override def mapValues[C](f: B => C): scala.collection.MapView[String, C] = {
+        impl.view.mapValues(kv => f(kv._2))
+    }
 }

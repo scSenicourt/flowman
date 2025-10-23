@@ -83,7 +83,7 @@ class ColumnNodeOps extends NodeOps[Column] {
   */
 object ColumnTree {
     object implicits {
-        implicit val columnNodeOps = new ColumnNodeOps
+        implicit val columnNodeOps:ColumnNodeOps = new ColumnNodeOps
     }
 
     /**

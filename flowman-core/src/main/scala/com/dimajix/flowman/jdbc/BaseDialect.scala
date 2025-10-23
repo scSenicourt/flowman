@@ -582,7 +582,7 @@ class BaseCommands(dialect: SqlDialect) extends SqlCommands {
         }
         pkrs.close()
 
-        val cols = pk.sortBy(_._1).map(_._2)
+        val cols = pk.sortBy(_._1).map(_._2).toSeq
         if (cols.nonEmpty)
             Some(PrimaryKey(cols))
         else
@@ -607,7 +607,7 @@ class BaseCommands(dialect: SqlDialect) extends SqlCommands {
         }
         idxrs.close()
 
-        idxcols
+        idxcols.toSeq
             .groupBy(_._1).map { case(name,cols) =>
             TableIndex(name, cols.map(_._2), cols.foldLeft(false)(_ || _._3))
         }.toSeq

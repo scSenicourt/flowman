@@ -20,6 +20,7 @@ import java.net.URL
 import java.util.ServiceLoader
 
 import scala.collection.JavaConverters._
+import scala.collection.parallel.CollectionConverters._
 import scala.util.control.NonFatal
 
 import org.slf4j.LoggerFactory
@@ -188,6 +189,3 @@ final case class Module(
         )
     }
 }
-
-
-

@@ -416,7 +416,7 @@ final class HiveCatalog(val spark:SparkSession, val config:Configuration, val ex
         }
 
         if (colsToAdd.nonEmpty) {
-            val cmd = AlterTableAddColumnsCommand(table.toSpark, colsToAdd)
+            val cmd = AlterTableAddColumnsCommand(table.toSpark, colsToAdd.toSeq)
             cmd.run(spark)
         }
 

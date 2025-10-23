@@ -22,6 +22,8 @@ import scala.collection.Iterator
 import scala.collection.Map
 import scala.collection.Seq
 import scala.collection.Set
+import scala.collection.immutable.SetOps
+import scala.collection.mutable.Builder
 
 
 object SetIgnoreCase {
@@ -37,7 +39,7 @@ object SetIgnoreCase {
     }
 
 }
-class SetIgnoreCase private(impl:Map[String,String] = Map()) extends Set[String] {
+class SetIgnoreCase protected(impl:Map[String,String] = Map()) extends Set[String] with SetOps[String, Set, SetIgnoreCase]  {
     override def empty: SetIgnoreCase = SetIgnoreCase(Set.empty)
 
     /** Creates a new iterator over all key/value pairs of this map
@@ -47,6 +49,18 @@ class SetIgnoreCase private(impl:Map[String,String] = Map()) extends Set[String]
     override def iterator: Iterator[String] = impl.valuesIterator
 
     def incl(v: String): SetIgnoreCase = new SetIgnoreCase(impl + (v.toLowerCase(Locale.ROOT) -> v))
+
+    override protected def fromSpecific(coll: IterableOnce[String]): SetIgnoreCase = coll.foldLeft(SetIgnoreCase())((s,v) => s.incl(v))
+    override protected def newSpecificBuilder: Builder[String, SetIgnoreCase] =
+        new Builder[String, SetIgnoreCase] {
+            var data: scala.collection.mutable.ListBuffer[String] = scala.collection.mutable.ListBuffer()
+            def clear(): Unit = data.clear()
+            def result(): SetIgnoreCase = SetIgnoreCase(data)
+            def addOne(v: String): this.type = {
+                data.addOne(v)
+                this
+            }
+        }
 
     /** Removes a key from this map, returning a new map.
       *  @param    key the key to be removed
@@ -58,12 +72,6 @@ class SetIgnoreCase private(impl:Map[String,String] = Map()) extends Set[String]
     def excl(key: String): SetIgnoreCase = new SetIgnoreCase(impl - key.toLowerCase(Locale.ROOT))
 
     override def contains(elem: String): Boolean = impl.contains(elem.toLowerCase(Locale.ROOT))
-
-    override def diff(that: Set[String]): Set[String] = {
-        var result = Set.empty[String]
-        iterator.foreach(elem => if (!that.contains(elem)) result = result + elem)
-        result
-    }
 
     def get(v: String) : Option[String] = impl.get(v.toLowerCase(Locale.ROOT))
 }

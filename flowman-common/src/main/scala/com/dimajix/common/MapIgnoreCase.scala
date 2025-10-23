@@ -19,8 +19,11 @@ package com.dimajix.common
 import java.util.Locale
 
 import scala.collection.Iterator
-import scala.collection.Map
 import scala.collection.Seq
+import scala.collection.immutable.Map
+import scala.collection.immutable.Set
+import scala.collection.immutable.MapOps
+import scala.collection.mutable.Builder
 
 
 object MapIgnoreCase {
@@ -41,7 +44,7 @@ object MapIgnoreCase {
 }
 
 
-class MapIgnoreCase[B] private(impl:Map[String,(String,B)] = Map()) extends Map[String,B] {
+class MapIgnoreCase[B] private(impl:Map[String,(String,B)] = Map()) extends Map[String,B] with MapOps[String,B,Map,MapIgnoreCase[B]] {
     override def empty: MapIgnoreCase[B] = MapIgnoreCase[B]()
 
     override def get(key: String): Option[B] = {
@@ -63,7 +66,19 @@ class MapIgnoreCase[B] private(impl:Map[String,(String,B)] = Map()) extends Map[
       */
     override def iterator: Iterator[(String, B)] = impl.valuesIterator
 
-    override def keySet: scala.collection.Set[String] = impl.keySet
+    override def keySet: scala.collection.immutable.Set[String] = impl.keySet
+
+    override protected def fromSpecific(coll: IterableOnce[(String,B)]): MapIgnoreCase[B] = coll.foldLeft(MapIgnoreCase[B]())((m,kv) => m.updated(kv._1, kv._2))
+    override protected def newSpecificBuilder: Builder[(String,B), MapIgnoreCase[B]] =
+        new Builder[(String,B), MapIgnoreCase[B]] {
+            var data: scala.collection.mutable.ListBuffer[(String,B)] = scala.collection.mutable.ListBuffer()
+            def clear(): Unit = data.clear()
+            def result(): MapIgnoreCase[B] = MapIgnoreCase(data)
+            def addOne(v: (String,B)): this.type = {
+                data.addOne(v)
+                this
+            }
+        }
 
     override def keysIterator : Iterator[String] = impl.keysIterator
 
@@ -85,16 +100,4 @@ class MapIgnoreCase[B] private(impl:Map[String,(String,B)] = Map()) extends Map[
       *    @inheritdoc
       */
     def removed(key: String): MapIgnoreCase[B] = new MapIgnoreCase[B](impl - key.toLowerCase(Locale.ROOT))
-
-    override def -(key: String): Map[String, B] = removed(key)
-
-    override def -(key1: String, key2: String, keys: String*): Map[String, B] = {
-        var result = removed(key1).removed(key2)
-        keys.foreach(key => result = result.removed(key))
-        result
-    }
-
-    override def mapValues[C](f: B => C): scala.collection.MapView[String, C] = {
-        impl.view.mapValues(kv => f(kv._2))
-    }
 }

@@ -16,7 +16,7 @@
 
 package com.dimajix.common
 
-import scala.jdk.CollectionConverters._
+import scala.collection.JavaConverters._
 
 
 object JavaConverters {

@@ -38,7 +38,7 @@ case object FloatType extends FractionalType[Float] {
         def compare(x: Float, y: Float): Int = java.lang.Float.compare(x, y)
         override def zero: Float = 0.0f
         override def one: Float = 1.0f
-        override def parseString(str: String): Option[Float] = try Some(str.toFloat) catch { case _:NumberFormatException => None }
+        def parseString(str: String): Option[Float] = try Some(str.toFloat) catch { case _:NumberFormatException => None }
     }
 
     protected def parseRaw(value:String) : Float = value.toFloat

@@ -18,7 +18,7 @@ package com.dimajix.flowman.fs
 
 import java.io.FileNotFoundException
 
-import scala.collection.parallel.CollectionConverters._
+import com.dimajix.common.ParallelCompat._
 import scala.collection.parallel.ParIterable
 import scala.util.control.NonFatal
 

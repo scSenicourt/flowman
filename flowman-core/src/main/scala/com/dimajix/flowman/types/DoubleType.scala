@@ -38,7 +38,7 @@ case object DoubleType extends FractionalType[Double] {
         def compare(x: Double, y: Double): Int = java.lang.Double.compare(x, y)
         override def zero: Double = 0.0
         override def one: Double = 1.0
-        override def parseString(str: String): Option[Double] = try Some(str.toDouble) catch { case _:NumberFormatException => None }
+        def parseString(str: String): Option[Double] = try Some(str.toDouble) catch { case _:NumberFormatException => None }
     }
 
     override protected def parseRaw(value:String) : Double = value.toDouble

@@ -22,6 +22,7 @@ import java.sql.SQLNonTransientException
 import java.sql.Statement
 import java.util.Locale
 
+import scala.collection.compat._
 import scala.util.control.NonFatal
 
 import com.fasterxml.jackson.annotation.JsonProperty

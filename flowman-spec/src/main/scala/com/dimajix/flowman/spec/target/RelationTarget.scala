@@ -18,6 +18,7 @@ package com.dimajix.flowman.spec.target
 
 import java.time.Instant
 
+import scala.collection.compat._
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try

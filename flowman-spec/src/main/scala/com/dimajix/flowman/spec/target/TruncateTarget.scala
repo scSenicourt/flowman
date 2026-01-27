@@ -16,6 +16,8 @@
 
 package com.dimajix.flowman.spec.target
 
+import scala.collection.compat._
+
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.slf4j.LoggerFactory
 

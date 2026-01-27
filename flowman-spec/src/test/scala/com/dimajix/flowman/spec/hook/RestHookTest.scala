@@ -18,6 +18,7 @@ package com.dimajix.flowman.spec.hook
 
 import java.net.URL
 
+import scala.collection.compat._
 import scala.collection.mutable
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContextExecutor

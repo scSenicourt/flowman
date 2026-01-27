@@ -22,7 +22,7 @@ import java.net.URL
 import java.util.UUID
 
 import scala.collection.JavaConverters._
-import scala.collection.parallel.CollectionConverters._
+import com.dimajix.common.ParallelCompat._
 
 import org.apache.hadoop.conf.{Configuration => HadoopConfiguration}
 import org.apache.hadoop.hive.conf.HiveConf

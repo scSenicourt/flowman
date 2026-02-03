@@ -20,6 +20,6 @@ import scala.collection.parallel.CollectionConverters._
 
 object ParallelCompat {
     implicit class ParallelOps[T](coll: Iterable[T]) {
-        def par: collection.parallel.ParIterable[T] = coll.par
+        def par: scala.collection.parallel.ParIterable[T] = IterableIsParallelizable(coll).par
     }
 }

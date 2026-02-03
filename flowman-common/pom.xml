@@ -58,6 +58,53 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>default-scala-2.13</id>
+            <activation>
+                <property>
+                    <name>!scala.api_version</name>
+                </property>
+            </activation>
+            <dependencies>
+                <!--
+                    We can only include scala-parallel-collections for scala 2.13 other
+                    Otherwise it will break the build for scala 2.12
+                -->
+                <dependency>
+                    <groupId>org.scala-lang.modules</groupId>
+                    <artifactId>scala-parallel-collections_2.13</artifactId>
+                    <version>1.2.0</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>scala-2.13</id>
+            <activation>
+                <property>
+                    <name>scala.api_version</name>
+                    <value>2.13</value>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.scala-lang.modules</groupId>
+                    <artifactId>scala-parallel-collections_2.13</artifactId>
+                    <version>1.2.0</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>scala-2.12</id>
+            <activation>
+                <property>
+                    <name>scala.api_version</name>
+                    <value>2.12</value>
+                </property>
+            </activation>
+        </profile>
+    </profiles>
+
     <dependencies>
         <dependency>
             <groupId>com.dimajix.flowman</groupId>
@@ -120,4 +167,3 @@
         </dependency>
     </dependencies>
 </project>
-

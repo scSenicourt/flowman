@@ -101,6 +101,7 @@ object Module {
                         .filter(f => f.isFile() && patterns.exists(_.matches(f.name)))
                         .map(f => f -> loadFile(f))
                         .seq
+                        .toSeq
                 }
                 else {
                     Seq(file -> loadFile(file))

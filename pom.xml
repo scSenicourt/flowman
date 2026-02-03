@@ -1064,7 +1064,7 @@
                 <commons-io.version>2.16.1</commons-io.version>
                 <commons-lang3.version>3.20.0</commons-lang3.version>
                 <commons-math3.version>3.4.1</commons-math3.version>
-                <commons-text.version>1.6</commons-text.version>
+                <commons-text.version>1.10.0</commons-text.version>
                 <curator-client.version>2.13.0</curator-client.version>
                 <curator.version>2.13.0</curator.version>
                 <derby.version>10.14.2.0</derby.version>
@@ -1113,8 +1113,8 @@
                 <scala-xml.version>1.2.0</scala-xml.version>
                 <scalatest-api.version>3.2</scalatest-api.version>
                 <scalatest.version>3.2.9</scalatest.version>
-                <slf4j.version>1.7.30</slf4j.version>
-                <slf4j-api.version>1</slf4j-api.version>
+                <slf4j.version>2.0.7</slf4j.version>
+                <slf4j-api.version>2</slf4j-api.version>
                 <snakeyaml.version>1.27</snakeyaml.version>
                 <snakeyaml.scope>provided</snakeyaml.scope>
                 <snappy.version>1.1.8.4</snappy.version>

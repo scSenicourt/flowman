@@ -16,13 +16,16 @@
 
 package com.dimajix.spark.sql
 
-
 import scala.collection.JavaConverters._
-import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
-import org.apache.spark.sql.classic.{SparkSession => ClassicSparkSession,DataFrameBridge}
+
+import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.Dataset
+import org.apache.spark.sql.Row
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.SparkShim.expressionEncoderFor
 import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan
 import org.apache.spark.sql.types.StructType
+
 import com.dimajix.spark.sql.catalyst.PlanUtils
 
 
@@ -78,7 +81,7 @@ object DataFrameBuilder {
     def ofRows(sparkSession: SparkSession, logicalPlan: LogicalPlan): DataFrame = {
         val qe = sparkSession.sessionState.executePlan(logicalPlan)
         qe.assertAnalyzed()
-        DataFrameBridge.ofRows(sparkSession.asInstanceOf[ClassicSparkSession], logicalPlan, () => expressionEncoderFor(qe.analyzed.schema))
+        new Dataset[Row](sparkSession, logicalPlan, expressionEncoderFor(qe.analyzed.schema))
     }
 
     /**
@@ -90,8 +93,7 @@ object DataFrameBuilder {
      */
     def singleRow(sparkSession: SparkSession, schema: StructType): DataFrame = {
         val logicalPlan = PlanUtils.singleRowPlan(schema)
-
-        DataFrameBridge.ofRows(sparkSession.asInstanceOf[ClassicSparkSession], logicalPlan)
+        new Dataset[Row](sparkSession, logicalPlan, expressionEncoderFor(schema))
     }
 
     /**
@@ -103,6 +105,6 @@ object DataFrameBuilder {
      */
     def namedAttributes(sparkSession: SparkSession, schema: StructType): DataFrame = {
         val logicalPlan = PlanUtils.namedAttributePlan(schema)
-        DataFrameBridge.ofRows(sparkSession.asInstanceOf[ClassicSparkSession], logicalPlan)
+        new Dataset[Row](sparkSession, logicalPlan, expressionEncoderFor(schema))
     }
 }

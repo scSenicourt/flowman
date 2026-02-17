@@ -16,30 +16,15 @@
 
 package org.apache.spark.sql.catalyst.plans.logical
 
-// Spark 4.0 compatibility: With was renamed to WithCTE
 object With {
-    def unapply(p: LogicalPlan) : Option[(LogicalPlan, Seq[(String, SubqueryAlias)])] = {
+    def unapply(p: LogicalPlan) : Option[(LogicalPlan, Seq[(String, SubqueryAlias)], Boolean)] = {
         p match {
-            case UnresolvedWith(child, cteRelations) => Some((child, cteRelations))
+            case UnresolvedWith(child, cteRelations, allowRecursion) => Some((child, cteRelations, allowRecursion))
             case _ => None
         }
     }
 
-    def apply(child:LogicalPlan, cteRelations:Seq[(String, SubqueryAlias)]) : UnresolvedWith = {
-        UnresolvedWith(child, cteRelations)
-    }
-}
-
-// Also provide the new WithCTE alias for compatibility
-object WithCTE {
-    def unapply(p: LogicalPlan) : Option[(LogicalPlan, Seq[(String, SubqueryAlias)])] = {
-        p match {
-            case UnresolvedWith(child, cteRelations) => Some((child, cteRelations))
-            case _ => None
-        }
-    }
-
-    def apply(child:LogicalPlan, cteRelations:Seq[(String, SubqueryAlias)]) : UnresolvedWith = {
-        UnresolvedWith(child, cteRelations)
+    def apply(child:LogicalPlan, cteRelations:Seq[(String, SubqueryAlias)], allowRecursion:Boolean) : UnresolvedWith = {
+        UnresolvedWith(child, cteRelations, allowRecursion)
     }
 }

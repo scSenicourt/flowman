@@ -27,7 +27,7 @@ object StreamingUtils {
                 val logicalPlan = LogicalRDD(
                     triggerDF.schema.map(f => AttributeReference(f.name, f.dataType, f.nullable, f.metadata)()),
                     triggerDF.queryExecution.toRdd,
-                    isStreaming = true)(spark)
+                    isStreaming = true)(spark.asInstanceOf[org.apache.spark.sql.classic.SparkSession])
                 DataFrameBuilder.ofRows(spark, logicalPlan)
             }
             override def stop(): Unit = {}

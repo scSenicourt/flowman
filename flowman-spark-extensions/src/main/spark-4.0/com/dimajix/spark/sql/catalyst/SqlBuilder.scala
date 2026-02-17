@@ -151,7 +151,7 @@ class SqlBuilder private(
     case p: Project =>
       projectToSQL(p, isDistinct = false)
 
-    case a @ Aggregate(_, _, _, e @ Expand(_, _, p: Project)) if isGroupingSet(a, e, p) =>
+    case a @ Aggregate(_, _, e @ Expand(_, _, p: Project), _) if isGroupingSet(a, e, p) =>
       groupingSetToSQL(a, e, p)
 
     case p: Aggregate =>
@@ -219,7 +219,7 @@ class SqlBuilder private(
         val qualifiedName = s"${quoteIdentifier(m.database)}.${quoteIdentifier(m.identifier.table)}"
         qualifiedName
 
-    case Sort(orders, _, _, RepartitionByExpression(partitionExprs, child, _, _))
+    case Sort(orders, _, RepartitionByExpression(partitionExprs, child, _, _), _)
         if orders.map(_.child) == partitionExprs =>
       build(toSQL(child), "CLUSTER BY", partitionExprs.map(SqlExpressionBuilder.toSql).mkString(", "))
 
@@ -614,7 +614,7 @@ class SqlBuilder private(
         //            +- MetastoreRelation default, src, None
         case p @ Project(_, f @ Filter(_, _: Aggregate)) => p.copy(child = addSubquery(f))
 
-        case w @ Window(_, _, _, _, f @ Filter(_, _: Aggregate)) => w.copy(child = addSubquery(f))
+        case w @ Window(_, _, _, f @ Filter(_, _: Aggregate), _) => w.copy(child = addSubquery(f))
 
         case a: Aggregate => a.copy(child = addSubqueryIfNeeded(a.child))
 
@@ -727,10 +727,10 @@ class SqlBuilder private(
 
     object ReplaceWindow  extends Rule[LogicalPlan] {
         override def apply(plan: LogicalPlan): LogicalPlan = plan transformUp {
-            case Window(expressions, _, _, _, p @ Project(_, child)) =>
+            case Window(expressions, _, _, p @ Project(_, child), _) =>
                 Project(p.projectList ++ expressions, child)
 
-            case Window(expressions, _, _, _, child) =>
+            case Window(expressions, _, _, child, _) =>
                 Project(child.output ++ expressions, child)
         }
     }
@@ -739,7 +739,7 @@ class SqlBuilder private(
         override def apply(plan: LogicalPlan): LogicalPlan = plan transformUp {
             // Simplify Project - Sort - Project
             // TODO: This is not working
-            case p1 @ Project(_, s @ Sort(_, _, _, p2: Project)) => s.copy(child = p1.copy(child = p2))
+            case p1 @ Project(_, s @ Sort(_, _, p2: Project, _)) => s.copy(child = p1.copy(child = p2))
         }
     }
 
@@ -789,7 +789,7 @@ class SqlBuilder private(
 
   object ExtractSQLTable {
     def unapply(plan: LogicalPlan): Option[SQLTable] = plan match {
-      case l @ LogicalRelation(_, _, Some(catalogTable), _)
+      case l @ LogicalRelation(_, _, Some(catalogTable), _, _)
           if catalogTable.identifier.database.isDefined =>
         Some(SQLTable(
           catalogTable.identifier.database.get,

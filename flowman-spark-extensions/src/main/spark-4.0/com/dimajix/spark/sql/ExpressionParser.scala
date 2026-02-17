@@ -21,6 +21,7 @@ import org.apache.spark.sql.catalyst.expressions.Expression
 import org.apache.spark.sql.catalyst.expressions.SubqueryExpression
 import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan
 import org.apache.spark.sql.functions.expr
+import org.apache.spark.sql.classic.ColumnConversions.toRichColumn
 
 
 object ExpressionParser {

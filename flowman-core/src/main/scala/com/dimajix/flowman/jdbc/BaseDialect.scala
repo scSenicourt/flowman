@@ -25,16 +25,13 @@ import java.sql.SQLTransientException
 import java.sql.Statement
 import java.sql.Timestamp
 import java.util.Locale
-
 import scala.collection.mutable
-
 import org.apache.commons.lang3.StringUtils
 import org.apache.spark.sql.Column
 import org.apache.spark.sql.catalyst.analysis.UnresolvedAttribute
 import org.apache.spark.sql.catalyst.expressions.Expression
 import org.apache.spark.sql.jdbc.JdbcType
 import org.apache.spark.sql.types.StructType
-
 import com.dimajix.common.SetIgnoreCase
 import com.dimajix.flowman.catalog.PartitionChange
 import com.dimajix.flowman.catalog.PartitionSpec
@@ -74,6 +71,7 @@ import com.dimajix.flowman.types.TimestampType
 import com.dimajix.flowman.types.VarcharType
 import com.dimajix.flowman.util.UtcTimestamp
 import com.dimajix.spark.sql.expressions.UnresolvableExpression
+import org.apache.spark.sql.classic.ColumnConversions.toRichColumn
 
 
 abstract class BaseDialect extends SqlDialect {

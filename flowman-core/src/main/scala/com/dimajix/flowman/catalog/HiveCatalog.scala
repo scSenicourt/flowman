@@ -18,10 +18,8 @@ package com.dimajix.flowman.catalog
 
 import java.sql.Timestamp
 import java.util.Locale
-
 import scala.collection.mutable
 import scala.util.control.NonFatal
-
 import org.apache.hadoop.fs.Path
 import org.apache.spark.sql.Column
 import org.apache.spark.sql.SparkSession
@@ -50,7 +48,6 @@ import org.apache.spark.sql.hive.HiveClientShim
 import org.apache.spark.sql.types.StructField
 import org.apache.spark.sql.types.StructType
 import org.slf4j.LoggerFactory
-
 import com.dimajix.common.ExceptionUtils.reasons
 import com.dimajix.common.MapIgnoreCase
 import com.dimajix.flowman.catalog.HiveCatalog.cleanupField
@@ -68,6 +65,7 @@ import com.dimajix.flowman.util.UtcTimestamp
 import com.dimajix.spark.features.hiveVarcharSupported
 import com.dimajix.spark.sql.SchemaUtils
 import com.dimajix.spark.sql.SchemaUtils.replaceCharVarchar
+import org.apache.spark.sql.classic.ColumnConversions.toRichColumn
 
 
 object HiveCatalog {
@@ -473,7 +471,7 @@ final class HiveCatalog(val spark:SparkSession, val config:Configuration, val ex
                 val field = schema.getOrElse(lwrKey, throw new IllegalArgumentException(s"Table $table does not contain a partition column '$key'"))
                 val att = AttributeReference(field.name, field.dataType, field.nullable)()
                 val lit = FieldValue.asLiteral(value)
-                (new Column(att) === lit).expr
+                (SparkShim.column(att) === lit).expr
             }.toSeq
 
             catalog.listPartitionsByFilter(table.toSpark, filter).nonEmpty

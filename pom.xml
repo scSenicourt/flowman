@@ -1074,9 +1074,9 @@
                 <httpclient.version>4.5.13</httpclient.version>
                 <httpcore.version>4.4.14</httpcore.version>
                 <ivy.version>2.5.3</ivy.version>
-                <jackson.version>2.12.3</jackson.version>
-                <jackson-api.version>2.12</jackson-api.version>
-                <jackson-databind.version>2.12.3</jackson-databind.version>
+                <jackson.version>2.18.2</jackson.version>
+                <jackson-api.version>2.18</jackson-api.version>
+                <jackson-databind.version>2.18.2</jackson-databind.version>
                 <jackson-dataformat-yaml.scope>provided</jackson-dataformat-yaml.scope>
                 <jackson-jaxb.scope>compile</jackson-jaxb.scope>
                 <jackson-jaxrs.scope>compile</jackson-jaxrs.scope>
@@ -1115,7 +1115,7 @@
                 <scalatest.version>3.2.9</scalatest.version>
                 <slf4j.version>2.0.7</slf4j.version>
                 <slf4j-api.version>2</slf4j-api.version>
-                <snakeyaml.version>1.27</snakeyaml.version>
+                <snakeyaml.version>2.3</snakeyaml.version>
                 <snakeyaml.scope>provided</snakeyaml.scope>
                 <snappy.version>1.1.10.7</snappy.version>
             </properties>
@@ -2945,7 +2945,7 @@
                 <groupId>org.json4s</groupId>
                 <artifactId>json4s-scalap_${scala.api_version}</artifactId>
                 <version>${json4s.version}</version>
-                <scope>${json4s.scope}</scope>
+                <scope>provided</scope>
             </dependency>
 
             <dependency>

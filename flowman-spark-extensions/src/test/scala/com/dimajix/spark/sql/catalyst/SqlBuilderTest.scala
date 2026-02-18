@@ -238,7 +238,7 @@ class SqlBuilderTest extends AnyFlatSpec with Matchers with LocalSparkSession {
               |    col_1 AS second
               |FROM (
               |        SELECT
-              |            col_0 AS gen_attr_1,
+              |            upper(col_0) AS gen_attr_1,
               |            col_1
               |        FROM sql_builder_0
               |        UNION ALL
@@ -251,10 +251,15 @@ class SqlBuilderTest extends AnyFlatSpec with Matchers with LocalSparkSession {
         )
         val sql2 = new SqlBuilder(df2.queryExecution.analyzed).toSQL
         noException shouldBe thrownBy(spark.sql(sql2))
-        sql2 should be ("SELECT CAST(`col_0` AS STRING) AS `first`, `col_1` AS `second` FROM `default`.`sql_builder_0` UNION ALL SELECT upper(CAST(`col_0` AS STRING)) AS `first`, `col_1` AS `second` FROM `default`.`sql_builder_0`")
+
+        if (com.dimajix.spark.SPARK_VERSION_MAJOR >= 4)
+            sql2 should be ("SELECT upper(CAST(`col_0` AS STRING)) AS `first`, `col_1` AS `second` FROM `default`.`sql_builder_0` UNION ALL SELECT upper(CAST(`col_0` AS STRING)) AS `first`, `col_1` AS `second` FROM `default`.`sql_builder_0`")
+        else {
+            sql2 should be ("SELECT CAST(`col_0` AS STRING) AS `first`, `col_1` AS `second` FROM `default`.`sql_builder_0` UNION ALL SELECT upper(CAST(`col_0` AS STRING)) AS `first`, `col_1` AS `second` FROM `default`.`sql_builder_0`")
+        }
     })
 
-    it should "support subquery UNIONs with partial column names and filters" in (if (hiveSupported) {
+      it should "support subquery UNIONs with partial column names and filters" in (if (hiveSupported) {
         val df2 = spark.sql(
             """
               |SELECT
@@ -276,7 +281,12 @@ class SqlBuilderTest extends AnyFlatSpec with Matchers with LocalSparkSession {
         )
         val sql2 = new SqlBuilder(df2.queryExecution.analyzed).toSQL
         noException shouldBe thrownBy(spark.sql(sql2))
-        sql2 should be ("SELECT `gen_attr_1` AS `first`, `gen_attr_3` AS `second` FROM (SELECT CAST(`col_0` AS STRING) AS `gen_attr_1`, `col_1` AS `gen_attr_3` FROM `default`.`sql_builder_0` UNION ALL SELECT upper(CAST(`col_0` AS STRING)) AS `gen_attr_1`, `col_1` AS `gen_attr_3` FROM `default`.`sql_builder_0`) AS `gen_subquery_2` WHERE (NOT (CAST(`gen_attr_1` AS INT) = 7))")
+
+        if (com.dimajix.spark.SPARK_VERSION_MAJOR >= 4)
+            sql2 should be ("SELECT `gen_attr_1` AS `first`, `gen_attr_3` AS `second` FROM (SELECT CAST(`col_0` AS BIGINT) AS `gen_attr_1`, `col_1` AS `gen_attr_3` FROM `default`.`sql_builder_0` UNION ALL SELECT CAST(upper(CAST(`col_0` AS STRING)) AS BIGINT) AS `gen_attr_1`, `col_1` AS `gen_attr_3` FROM `default`.`sql_builder_0`) AS `gen_subquery_2` WHERE (NOT (`gen_attr_1` = CAST(7 AS BIGINT)))")
+        else {
+            sql2 should be ("SELECT `gen_attr_1` AS `first`, `gen_attr_3` AS `second` FROM (SELECT CAST(`col_0` AS STRING) AS `gen_attr_1`, `col_1` AS `gen_attr_3` FROM `default`.`sql_builder_0` UNION ALL SELECT upper(CAST(`col_0` AS STRING)) AS `gen_attr_1`, `col_1` AS `gen_attr_3` FROM `default`.`sql_builder_0`) AS `gen_subquery_2` WHERE (NOT (CAST(`gen_attr_1` AS INT) = 7))")
+        }
     })
 
     it should "support subquery UNIONs without alias" in (if (hiveSupported) {
@@ -300,7 +310,12 @@ class SqlBuilderTest extends AnyFlatSpec with Matchers with LocalSparkSession {
         )
         val sql3 = new SqlBuilder(df3.queryExecution.analyzed).toSQL
         noException shouldBe thrownBy(spark.sql(sql3))
-        sql3 should be ("SELECT CAST(`col_0` AS STRING) AS `first`, `col_1` AS `second` FROM `default`.`sql_builder_0` UNION ALL SELECT upper(CAST(`col_0` AS STRING)) AS `first`, `col_1` AS `second` FROM `default`.`sql_builder_0`")
+
+        if (com.dimajix.spark.SPARK_VERSION_MAJOR >= 4)
+            sql3 should be("SELECT CAST(`col_0` AS BIGINT) AS `first`, `col_1` AS `second` FROM `default`.`sql_builder_0` UNION ALL SELECT CAST(upper(CAST(`col_0` AS STRING)) AS BIGINT) AS `first`, `col_1` AS `second` FROM `default`.`sql_builder_0`")
+        else {
+            sql3 should be("SELECT CAST(`col_0` AS STRING) AS `first`, `col_1` AS `second` FROM `default`.`sql_builder_0` UNION ALL SELECT upper(CAST(`col_0` AS STRING)) AS `first`, `col_1` AS `second` FROM `default`.`sql_builder_0`")
+        }
     })
 
     it should "support subquery WINDOW functions" in (if (hiveSupported) {

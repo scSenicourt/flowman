@@ -255,13 +255,13 @@ class AvroSchemaUtilsTest extends AnyFlatSpec with Matchers {
               |    "type" : [ {
               |      "type" : "record",
               |      "name" : "AggregatedFields",
-              |      "namespace" : ".AggregatedFields",
+              |      "namespace" : "AggregatedFields",
               |      "fields" : [ {
               |        "name" : "Traveler",
               |        "type" : [ {
               |          "type" : "record",
               |          "name" : "Traveler",
-              |          "namespace" : ".AggregatedFields.Traveler",
+              |          "namespace" : "AggregatedFields.Traveler",
               |          "fields" : [ {
               |            "name" : "Latin",
               |            "type" : [ "string", "null" ]

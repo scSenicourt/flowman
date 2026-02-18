@@ -208,8 +208,8 @@ class ColumnCheckTest extends AnyFlatSpec with Matchers with MockFactory with Lo
         val testExecutor = new DefaultColumnCheckExecutor
 
         val df = spark.createDataFrame(Seq(
-            (Some(1),2,1),
-            (None,3,2)
+            (Some(1.0),2.0,1.0),
+            (None,3.0,2.0)
         ))
 
         val test = RangeColumnCheck(None, lower="1.0", upper="2.2")

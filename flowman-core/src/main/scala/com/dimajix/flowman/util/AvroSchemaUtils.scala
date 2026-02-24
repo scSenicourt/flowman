@@ -102,7 +102,7 @@ object AvroSchemaUtils {
             case NullType => ASchema.create(NULL)
             case StringType => ASchema.create(STRING)
             case StructType(fields) => {
-                val nestedNs = ns + "." + name
+                val nestedNs = if (ns == "") name else ns + "." + name;
                 val record = ASchema.createRecord(name, null, nestedNs, false)
                 record.setFields(fields.map(f => toAvro(f, nestedNs)).asJava)
                 record

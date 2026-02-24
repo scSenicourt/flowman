@@ -45,6 +45,7 @@ import com.dimajix.spark.sql.DataFrameBuilder
 import com.dimajix.spark.sql.DataFrameUtils.withTempView
 import com.dimajix.spark.sql.DataFrameUtils.withTempViews
 import com.dimajix.spark.sql.SqlParser
+import org.apache.spark.sql.classic.DataFrameBridge
 
 
 final case class RecursiveSqlMapping(
@@ -110,7 +111,7 @@ extends BaseMapping {
         val union = findUnion(plan)
         val firstChild = union.children.head
         val resolvedStart = spark.sessionState.analyzer.execute(firstChild)
-        new Dataset[Row](spark, firstChild, expressionEncoderFor(resolvedStart.schema))
+        DataFrameBridge.ofRows(spark.asInstanceOf[_root_.org.apache.spark.sql.classic.SparkSession], firstChild, () => expressionEncoderFor(resolvedStart.schema))
     }
     private def nextDf(statement:String, prev:DataFrame) : DataFrame = {
         val spark = prev.sparkSession

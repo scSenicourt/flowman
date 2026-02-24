@@ -76,6 +76,7 @@ import com.dimajix.flowman.types.FieldValue
 import com.dimajix.flowman.types.SchemaUtils
 import com.dimajix.flowman.types.SingleValue
 import com.dimajix.flowman.types.{StructType => FlowmanStructType}
+import org.apache.spark.sql.classic.ColumnConversions.toRichColumn
 
 
 abstract class JdbcTableRelationBase(
